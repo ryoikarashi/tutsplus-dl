@@ -13,10 +13,21 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--category', help='specify a category (default: code)')
     parser.add_argument('--slug', help='specify a slug to download a course with the specified slug')
+    parser.add_argument('--directory', help='specify a directory where downloaded videos will be added')
+    parser.add_argument('--page', help="specify a starting page number")
     args = parser.parse_args()
 
     # if category is not specified, make default category 'code'
     args.category = args.category if args.category else 'code'
+
+    # if directory is not specified, make default directory 'current directory (./)'
+    args.directory = args.directory if args.directory else './'
+
+    # if directory's last character contains '/', then remove it
+    args.directory = args.directory[:-1] if args.directory[-1] == '/' else args.directory
+
+    # if page is not specified, make default page number '1'
+    args.page = args.page if args.page else 1
 
     return args
 
@@ -27,12 +38,11 @@ class TutsplusDownLoader:
     def __init__(self, category=args.category, course_slug=args.slug):
         self.category = category
         self.course_slug = course_slug
+        self.directory = args.directory
+        self.page_num = int(args.page) - 1
         self.base_url = 'https://' + category + '.tutsplus.com'
         self.url      = self.base_url + '/courses'
         self.certain_course_url = (self.url + '/' + self.course_slug) if self.course_slug else None
-
-    def wait_a_bit(self, duration=1):
-        sleep(duration)
 
     def print_current_page(self, current_page):
         print('----------------------------------------------')
@@ -95,7 +105,7 @@ class TutsplusDownLoader:
         return num_of_lessons
 
     def get_directory_name(self, course_title):
-        directory = './videos/' + self.category + '/' + course_title
+        directory = self.directory + '/videos/' + self.category + '/' + course_title
         return directory
 
     def create_directory(self, course_title):
@@ -104,15 +114,14 @@ class TutsplusDownLoader:
             os.makedirs(directory)
 
     def download_via_youtube_dl(self, course_title, lesson_url_list):
-
-        # wait 5s to avoid too many requests
-        self.wait_a_bit(5)
-
         ydl_opts = {
             'username': ACCOUNT['username'],
             'password': ACCOUNT['password'],
             'cookiefile': './cookies.txt',
             'verbose': 'true',
+            # add -4 option to avoid HTTP Error 429 Too Many Requests
+            # Ref: https://github.com/rg3/youtube-dl/issues/5138
+            'force-ipv4': 'true',
             'outtmpl': self.get_directory_name(course_title) + '/%(autonumber)s - %(title)s.%(ext)s'
         }
         with YoutubeDL(ydl_opts) as ydl:
@@ -161,7 +170,7 @@ class TutsplusDownLoader:
         last_page = self.get_last_page_num(base_soup)
 
         # loop until last page
-        for i in range(0, last_page):
+        for i in range(self.page_num, last_page):
 
             # display current page number
             current_page = str(i + 1)
