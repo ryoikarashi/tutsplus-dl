@@ -23,14 +23,19 @@ To copy the cookie, I used [cookies.txt](https://chrome.google.com/webstore/deta
 
 ## OPTIONS
 
-	--category	tuts+ category (default: code)
-				it'll be shown as a subdomain of tutsplus.com
-				e.g. code.tutsplus.com
-					
-	--slug		tuts+ course slug (default: None)
-			  	it'll be shown as its url.
-				e.g. when url is something like this: https://code.tutsplus.com/courses/javascript-without-jquery,
-				then slug is `javascript-without-jquery`
+	--category		tuts+ category (default: code)
+					it'll be shown as a subdomain of tutsplus.com
+					e.g. code.tutsplus.com
+
+	--slug			tuts+ course slug (default: None)
+			  		it'll be shown as its url.
+					e.g. when url is something like this: https://code.tutsplus.com/courses/javascript-without-jquery,
+					then slug is `javascript-without-jquery`
+
+	--directory		directory where videos will be added
+					e.g. ~/Desktop/tutsplus
+
+	--page			a starting page number
 
 ## EXAMPLES
 
@@ -49,6 +54,10 @@ Download all courses in a specific category, then
 Download a specific course in a specific category, then
 
 	python dl.py --category code --slug get-started-with-nativescript-and-mobile-angular-2
+
+Download all courses in a specific category from a specific page into a specific directory
+	
+	python dl.py --category design --page 3 --directory ~/Desktop/tutsplus
 
 
 ## OUTPUT
