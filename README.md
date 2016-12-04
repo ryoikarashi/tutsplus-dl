@@ -6,6 +6,8 @@ NOTE: To download premium videos, you're required to have a tuts+ premium accoun
 
 ## REQUIREMENTS
 
+[youtube-dl](https://github.com/rg3/youtube-dl)
+
 python 3.x
 
 	pip install -r requirements.txt
