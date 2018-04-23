@@ -68,3 +68,13 @@ Downloaded videos will be stored in
  `./videos/CATEGORY_NAME/COURSE_NAME/INDEX - LESSON_NAME.[ext]`
 
 e.g. `./videos/code/javascript-without-jquery/00001 - Introduction.mp4`
+
+
+## Handling Errors
+
+ - `directory name is not valid` error
+   - This error occurs when, say, course title is `ASP.NET 102: MVC`, when you download it, it will throw the above mentioned error.
+   - To resolve this, just go to your virtualenv's os.py file (which is located at yourvirtualenv/lib/os.py)
+     and add below line just above line 205 :
+     - `name = name.replace(":", "-")`
+  
