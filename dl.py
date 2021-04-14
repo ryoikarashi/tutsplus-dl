@@ -18,16 +18,16 @@ def parse_args():
     args = parser.parse_args()
 
     # if category is not specified, make default category 'code'
-    args.category = args.category if args.category else 'code'
+    args.category = args.category or 'code'
 
     # if directory is not specified, make default directory 'current directory (./)'
-    args.directory = args.directory if args.directory else './'
+    args.directory = args.directory or './'
 
     # if directory's last character contains '/', then remove it
     args.directory = args.directory[:-1] if args.directory[-1] == '/' else args.directory
 
     # if page is not specified, make default page number '1'
-    args.page = args.page if args.page else 1
+    args.page = args.page or 1
 
     return args
 
@@ -51,33 +51,27 @@ class TutsplusDownLoader:
 
     def get_soup(self, url=None, page=None):
         page = str(page)
-        url = url if url else self.url
+        url = url or self.url
         request_url = (url + '?page=' + page) if page else url
         result = requests.get(request_url)
         c = result.content
-        soup = BeautifulSoup(c, 'lxml')
-        return soup
+        return BeautifulSoup(c, 'lxml')
 
     def get_last_page_num(self, base_soup):
-        last_page_num = int(base_soup.select('.pagination__button')[-2].getText())
-        return last_page_num
+        return int(base_soup.select('.pagination__button')[-2].getText())
 
     def get_course(self, page_soup, index):
-        course = page_soup.select('.posts__post')[index]
-        return course
+        return page_soup.select('.posts__post')[index]
 
     def get_course_url(self, course):
-        course_url = course.select_one('.posts__post-preview')['href']
-        return course_url
+        return course.select_one('.posts__post-preview')['href']
 
     def get_num_of_courses(self, page_soup):
         courses = page_soup.select('.posts__post')
-        num_of_courses = len(courses)
-        return num_of_courses
+        return len(courses)
 
     def get_course_title(self, course_soup):
-        course_title = course_soup.select_one('.content-banner__title').getText()
-        return course_title
+        return course_soup.select_one('.content-banner__title').getText()
 
     def print_course_title(self, course_title):
         print('\t----------------------------------------------')
@@ -85,28 +79,23 @@ class TutsplusDownLoader:
         print('\t----------------------------------------------')
 
     def get_lesson(self, course_soup, index):
-        lesson = course_soup.select('h3.lesson-index__lesson')[index]
-        return lesson
+        return course_soup.select('h3.lesson-index__lesson')[index]
 
     def get_lesson_url(self, lesson):
-        lesson_url = lesson.select_one('.lesson-index__lesson-link')['href']
-        return lesson_url
+        return lesson.select_one('.lesson-index__lesson-link')['href']
 
     def get_lesson_title(self, lesson):
-        lesson_title = lesson.select_one('.lesson-index__lesson-title').getText()
-        return lesson_title
+        return lesson.select_one('.lesson-index__lesson-title').getText()
 
     def print_lesson_title(self, lesson_title):
         print('\t\tLesson Title: ' + lesson_title)
 
     def get_num_of_lessons(self, course_soup):
         lessons = course_soup.select('h3.lesson-index__lesson')
-        num_of_lessons = len(lessons)
-        return num_of_lessons
+        return len(lessons)
 
     def get_directory_name(self, course_title):
-        directory = self.directory + '/videos/' + self.category + '/' + course_title
-        return directory
+        return self.directory + '/videos/' + self.category + '/' + course_title
 
     def create_directory(self, course_title):
         directory = self.get_directory_name(course_title)
@@ -142,7 +131,7 @@ class TutsplusDownLoader:
         lesson_url_list = []
 
         # loop through lessons in a course
-        for k in range(0, num_of_lessons):
+        for k in range(num_of_lessons):
 
             # get a lesson url
             lesson = self.get_lesson(course_soup, k)
@@ -183,7 +172,7 @@ class TutsplusDownLoader:
             num_of_courses = self.get_num_of_courses(page_soup)
 
             # loop through courses in a  page
-            for j in range(0, num_of_courses):
+            for j in range(num_of_courses):
 
                 # get a course url
                 course = self.get_course(page_soup, j)
@@ -203,7 +192,7 @@ class TutsplusDownLoader:
                 lesson_url_list = []
 
                 # loop through lessons in a course
-                for k in range(0, num_of_lessons):
+                for k in range(num_of_lessons):
 
                     # get a lesson url
                     lesson = self.get_lesson(course_soup, k)
